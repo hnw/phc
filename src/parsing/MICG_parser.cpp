@@ -16,10 +16,20 @@
 #define BOOST_SPIRIT_DEBUG_FLAGS BOOST_SPIRIT_DEBUG_FLAGS_NODES
 
 #include <boost/lexical_cast.hpp>
+
+#include <boost/version.hpp>
+
+#if BOOST_VERSION >= 103800
+#include <boost/spirit/include/classic.hpp>
+#include <boost/spirit/include/classic_position_iterator.hpp>
+#include <boost/spirit/include/classic_ast.hpp>
+#include <boost/spirit/include/classic_parse_tree.hpp>
+#else
 #include <boost/spirit.hpp>
 #include <boost/spirit/iterator/position_iterator.hpp>
 #include <boost/spirit/tree/ast.hpp>
 #include <boost/spirit/tree/parse_tree.hpp>
+#endif
 
 #include <iostream>
 
@@ -31,7 +41,11 @@
 #include "process_ir/XML_unparser.h"
 
 using namespace std;
+#if BOOST_VERSION >= 103800
+using namespace boost::spirit::classic;
+#else
 using namespace boost::spirit;
+#endif
 using namespace boost;
 using namespace MICG;
 
@@ -254,7 +268,7 @@ struct MICG_grammar : public grammar<MICG_grammar>
 
 typedef position_iterator<char const *> pos_iter_t;
 typedef tree_match<pos_iter_t, node_iter_data_factory<> > tree_match_t;
-typedef tree_match_t::container_t container;
+typedef tree_match_t::container_t container_t_t;
 typedef tree_match_t::tree_iterator tree_iter_t;
 
 
@@ -268,7 +282,7 @@ typedef tree_match_t::tree_iterator tree_iter_t;
 
 Object* create_micg_node (tree_iter_t tree);
 
-Object_list* create_micg_list (container trees)
+Object_list* create_micg_list (container_t_t trees)
 {
 	Object_list* result = new Object_list;
 	for (tree_iter_t tree = trees.begin (); tree != trees.end (); tree++)
