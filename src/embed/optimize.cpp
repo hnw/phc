@@ -220,7 +220,12 @@ PHP::get_method_info (String* name)
 
 	zend_fcall_info fci;
 	zend_fcall_info_cache fcic;
+
+#if PHP_VERSION_ID >= 50300
+	int result = zend_fcall_info_init (&fn, 0, &fci, &fcic, NULL, NULL TSRMLS_CC);
+#else
 	int result = zend_fcall_info_init (&fn, &fci, &fcic TSRMLS_CC);
+#endif
 
 	if (result != SUCCESS)
 		return NULL;
@@ -245,7 +250,13 @@ Internal_method_info::has_implementation ()
 bool
 Internal_method_info::return_by_ref ()
 {
+
+#if PHP_VERSION_ID >= 50400
+	return (func->common.fn_flags & ZEND_ACC_RETURN_REFERENCE);
+#else
 	return func->common.return_reference;
+#endif
+
 }
 
 bool
